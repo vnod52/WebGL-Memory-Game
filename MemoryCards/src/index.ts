@@ -15,9 +15,8 @@ export class Main {
     engine: Engine = new Engine(this.canvas, true);
     scene: Scene = this.createScene();
     camera: ArcRotateCamera;
-    light: DirectionalLight;
-
-
+	light: DirectionalLight;
+	
     createScene(): Scene {
         // Setup important scene stuff
         var scene: Scene = new Scene(this.engine);
@@ -43,28 +42,48 @@ export class Main {
         ];
 
         //Array to store card values.
-        var gameArray = [0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7];
+		var gameArray = [0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7];
 
+		//Use function to shuffle the array
+		function shuffle(array) {
+			var currentIndex = array.length, temporaryValue, randomIndex;
+		  
+			// While there remain elements to shuffle...
+			while (0 !== currentIndex) {
+		  
+			  // Pick a remaining element...
+			  randomIndex = Math.floor(Math.random() * currentIndex);
+			  currentIndex -= 1;
+		  
+			  // And swap it with the current element.
+			  temporaryValue = array[currentIndex];
+			  array[currentIndex] = array[randomIndex];
+			  array[randomIndex] = temporaryValue;
+			}
+			return array;
+		  }
+		  gameArray = shuffle(gameArray);
+
+		// a counter to tell us how many animation have been completed so far
+		var animationCompleted = 0;
         //Array to store picked cards
         var pickedArray = [];
-
         //counter to tell how many cards we have picked
 		var pickedCards = 0;
-		
-		//shows if the card has been picked
-		var picked = false;
-
-        //Create a table background. Card will be in front of table background.
+	    //Create a table background. Card will be in front of table background.
         var tableMaterial = new StandardMaterial("tableMaterial", scene);
         tableMaterial.diffuseTexture = new Texture("wood.jpg", scene);
         var table = Mesh.CreateBox("table", 12, scene);
         table.scaling.z = 0.025;
-        table.material = tableMaterial;
+		table.material = tableMaterial;
+		table.isPickable = false;
 
 // Placing the 16 cards in a 4x4 matrix
 var cardsArray = [];
 	for(var i=0; i<16; i++){
-			var card = Mesh.CreateBox("card", 2, scene);
+			var card = Mesh.CreateBox("card"+i, 2, scene);
+			//shows if the card has been picked
+			var picked = false;
 			// determine card index
 			var cardIndex = i;
 			// assigning the card a color attribute: the value
@@ -99,87 +118,105 @@ var cardsArray = [];
 			// assigning the multi material to the card
 			card.material=cardMultiMat;
 			cardsArray[i]=card;
-
-
-			
 		}
    
 		//Add a click listener and check how many cards a clicked
 		window.addEventListener("click", function (e){
 			var pickResult = scene.pick(e.clientX, e.clientY);
 
-			switch (pickResult.pickedMesh.id) {
-				case "card0":
-					cardIndex = 0
-					break;
-				case "card1":
-					cardIndex = 1
-					break;
-				case "card2":
-					cardIndex = 2
-					break;
-				case "card3":
-					cardIndex = 3
-					break;
-				case "card4":
-					cardIndex = 4
-					break;
-				case "card5":
-					cardIndex = 5
-					break;
-				case "card6":
-					cardIndex = 6
-					break;
-				case "card7":
-					cardIndex = 7
-					break;
-				case "card8":
-					cardIndex = 8
-					break;
-				case "card9":
-					cardIndex = 9
-					break;
-				case "card10":
-					cardIndex = 10
-					break;
-				case "card11":
-					cardIndex = 11
-					break;
-				case "card12":
-					cardIndex = 12
-					break;
-				case "card13":
-					cardIndex = 13
-					break;
-				case "card14":
-					cardIndex = 14
-					break;
-				case "card15":
-					cardIndex = 15
-					break;
+			if (pickedCards<2) {
+				//set picked to true so we can't pick same card again.
+				switch (pickResult.pickedMesh.id) {
+					case "card0":
+						cardIndex = 0
+						break;
+					case "card1":
+						cardIndex = 1
+						break;
+					case "card2":
+						cardIndex = 2
+						break;
+					case "card3":
+						cardIndex = 3
+						break;
+					case "card4":
+						cardIndex = 4
+						break;
+					case "card5":
+						cardIndex = 5
+						break;
+					case "card6":
+						cardIndex = 6
+						break;
+					case "card7":
+						cardIndex = 7
+						break;
+					case "card8":
+						cardIndex = 8
+						break;
+					case "card9":
+						cardIndex = 9
+						break;
+					case "card10":
+						cardIndex = 10
+						break;
+					case "card11":
+						cardIndex = 11
+						break;
+					case "card12":
+						cardIndex = 12
+						break;
+					case "card13":
+						cardIndex = 13
+						break;
+					case "card14":
+						cardIndex = 14
+						break;
+					case "card15":
+						cardIndex = 15
+						break;
+				}
+				pickResult.pickedMesh.rotate(Axis.Y, this.Math.PI, Space.LOCAL);
+
+				cardsArray[cardIndex].picked = true;
+				//store picked card in array
+				pickedArray[pickedCards] = cardIndex;
+				console.log("you clicked on card " + cardIndex);
+				console.log("PickedArray: " + pickedArray[0] + " " + pickedArray[1]);
+				console.log("Number of pickedCards " + pickedCards);
+				pickedCards++;
 			}
 
-			//set picked to true.
-			cardsArray[cardIndex].picked = true;
-			//store picked card in array
-			pickedArray[pickedCards] = cardIndex;
-			//increase picked card
-			pickedCards++;
 
-			console.log("you clicked on card " + cardIndex);
 
-			if (pickedCards == 1) {
-				//rotate first card
-				pickResult.pickedMesh.rotate(Axis.Y, this.Math.PI, Space.LOCAL);
-				
-			} else {
-				//rotatte second card
-				pickResult.pickedMesh.rotate(Axis.Y, this.Math.PI, Space.LOCAL);
-			}
+			this.window.setTimeout(function(){
+				if (pickedArray[1] != null){
+					console.log("array not null & two cards picked");
+					if (cardsArray[pickedArray[0]] == cardsArray[pickedArray[1]]) {
+						console.log("Cards Match");
+						pickedCards = 0;
+		
+					} else {
+						console.log("cards DONT match")
+						var x: Mesh = cardsArray[pickedArray[0]];
+						var y: Mesh = cardsArray[pickedArray[1]];
+						x.rotate(Axis.Y, -this.Math.PI, Space.LOCAL);
+						y.rotate(Axis.Y, -this.Math.PI, Space.LOCAL);  
+						pickedCards = 0;
+						pickedArray = [];
+		
+					}
+	
+				}
+
+			},2000);
+
+
 		});
 
         return scene;
 	}
+
 
 	update() {
 		// increment our time for use with sine waves etc.
