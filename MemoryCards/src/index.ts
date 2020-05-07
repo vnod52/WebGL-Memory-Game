@@ -182,7 +182,7 @@ var cardsArray = [];
 				//store picked card in array
 				pickedArray[pickedCards] = cardIndex;
 				console.log("you clicked on card " + cardIndex);
-				console.log("PickedArray: " + pickedArray[0] + " " + pickedArray[1]);
+				console.log("PickedArray: " + gameArray[pickedArray[0]] + " " + gameArray[pickedArray[1]]);
 				console.log("Number of pickedCards " + pickedCards);
 				pickedCards++;
 			}
@@ -192,7 +192,7 @@ var cardsArray = [];
 			this.window.setTimeout(function(){
 				if (pickedArray[1] != null){
 					console.log("array not null & two cards picked");
-					if (cardsArray[pickedArray[0]] == cardsArray[pickedArray[1]]) {
+					if (gameArray[pickedArray[0]] == gameArray[pickedArray[1]]) {
 						console.log("Cards Match");
 						pickedCards = 0;
 		
@@ -209,7 +209,7 @@ var cardsArray = [];
 	
 				}
 
-			},2000);
+			},1000);
 
 
 		});
