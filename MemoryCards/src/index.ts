@@ -1,4 +1,4 @@
-import { Engine, Scene, Axis, Space, ArcRotateCamera, Vector3, SubMesh, MeshBuilder, Texture, Mesh, DirectionalLight, StandardMaterial, Color3, MultiMaterial } from 'babylonjs';
+import { Engine, Scene, Axis, Space, ArcRotateCamera, Vector3, Sound, SubMesh, MeshBuilder, Texture, Mesh, DirectionalLight, StandardMaterial, Color3, MultiMaterial } from 'babylonjs';
 
 export class Main {
 
@@ -27,7 +27,9 @@ export class Main {
 
         //Add lighting to scene
         this.light = new DirectionalLight("light", new Vector3(5,0,20), scene);
-        this.light.position = new Vector3(1,1,-10);
+		this.light.position = new Vector3(1,1,-10);
+		
+		var sound = new Sound("click","sounds/click.mp3", scene);
 
         //Card Array with colors, will be replaced with image array after test.
         var colors = [
@@ -82,10 +84,11 @@ export class Main {
 var cardsArray = [];
 	for(var i=0; i<16; i++){
 			var card = Mesh.CreateBox("card"+i, 2, scene);
-			//shows if the card has been picked
-			var picked = false;
 			// determine card index
 			var cardIndex = i;
+			//shows if the card has been picked
+			// var p = cardsArray[cardIndex];
+			// p.mesh.picked = false;
 			// assigning the card a color attribute: the value
 			var cardValue = gameArray[i];
 			// scaling and placing the card
@@ -123,58 +126,77 @@ var cardsArray = [];
 		//Add a click listener and check how many cards a clicked
 		window.addEventListener("click", function (e){
 			var pickResult = scene.pick(e.clientX, e.clientY);
-
+			console.log("PickedArray: " + cardsArray[cardIndex].picked);
+			
 			if (pickedCards<2) {
 				//set picked to true so we can't pick same card again.
 				switch (pickResult.pickedMesh.id) {
 					case "card0":
 						cardIndex = 0
+						sound.play();
 						break;
 					case "card1":
 						cardIndex = 1
+						sound.play();
 						break;
 					case "card2":
 						cardIndex = 2
+						sound.play();
 						break;
 					case "card3":
 						cardIndex = 3
+						sound.play();
 						break;
 					case "card4":
 						cardIndex = 4
+						sound.play();
 						break;
 					case "card5":
 						cardIndex = 5
+						sound.play();
 						break;
 					case "card6":
 						cardIndex = 6
+						sound.play();
 						break;
 					case "card7":
 						cardIndex = 7
+						sound.play();
 						break;
 					case "card8":
 						cardIndex = 8
+						sound.play();
 						break;
 					case "card9":
 						cardIndex = 9
+						sound.play();
 						break;
 					case "card10":
 						cardIndex = 10
+						sound.play();
 						break;
 					case "card11":
 						cardIndex = 11
+						sound.play();
 						break;
 					case "card12":
 						cardIndex = 12
+						sound.play();
 						break;
 					case "card13":
 						cardIndex = 13
+						sound.play();
 						break;
 					case "card14":
 						cardIndex = 14
+						sound.play();
 						break;
 					case "card15":
 						cardIndex = 15
+						sound.play();
 						break;
+						default:
+						console.log("Card was not clicked");
 				}
 				pickResult.pickedMesh.rotate(Axis.Y, this.Math.PI, Space.LOCAL);
 
@@ -182,12 +204,9 @@ var cardsArray = [];
 				//store picked card in array
 				pickedArray[pickedCards] = cardIndex;
 				console.log("you clicked on card " + cardIndex);
-				console.log("PickedArray: " + gameArray[pickedArray[0]] + " " + gameArray[pickedArray[1]]);
 				console.log("Number of pickedCards " + pickedCards);
 				pickedCards++;
 			}
-
-
 
 			this.window.setTimeout(function(){
 				if (pickedArray[1] != null){
@@ -204,28 +223,20 @@ var cardsArray = [];
 						y.rotate(Axis.Y, -this.Math.PI, Space.LOCAL);  
 						pickedCards = 0;
 						pickedArray = [];
-		
 					}
-	
 				}
-
 			},1000);
-
-
 		});
 
         return scene;
 	}
 
-
 	update() {
 		// increment our time for use with sine waves etc.
 		this.timeElapsed += this.engine.getDeltaTime() / 1000;
-		
 
 		// Render the scene.
 		this.scene.render();
-
 	}
 }
 
