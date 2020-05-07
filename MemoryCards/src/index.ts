@@ -1,4 +1,4 @@
-import { Engine, Scene, ArcRotateCamera, Vector3, SubMesh, MeshBuilder, Texture, Mesh, DirectionalLight, StandardMaterial, Color3, MultiMaterial } from 'babylonjs';
+import { Engine, Scene, Axis, Space, ArcRotateCamera, Vector3, SubMesh, MeshBuilder, Texture, Mesh, DirectionalLight, StandardMaterial, Color3, MultiMaterial } from 'babylonjs';
 
 export class Main {
 
@@ -48,19 +48,13 @@ export class Main {
         //Array to store picked cards
         var pickedArray = [];
 
-        //counter to show how many animations have completed
-        var animationCompleted = 0;
-
         //counter to tell how many cards we have picked
 		var pickedCards = 0;
 		
 		//shows if the card has been picked
 		var picked = false;
 
-		//card Index
-		var cardIndex;
-
-        //Create a Table background. Card will be in front of table.
+        //Create a table background. Card will be in front of table background.
         var tableMaterial = new StandardMaterial("tableMaterial", scene);
         tableMaterial.diffuseTexture = new Texture("wood.jpg", scene);
         var table = Mesh.CreateBox("table", 12, scene);
@@ -70,9 +64,9 @@ export class Main {
 // Placing the 16 cards in a 4x4 matrix
 var cardsArray = [];
 	for(var i=0; i<16; i++){
-			var card = Mesh.CreateBox("card"+ i, 2, scene);
+			var card = Mesh.CreateBox("card", 2, scene);
 			// determine card index
-			cardIndex = i;
+			var cardIndex = i;
 			// assigning the card a color attribute: the value
 			var cardValue = gameArray[i];
 			// scaling and placing the card
@@ -106,6 +100,8 @@ var cardsArray = [];
 			card.material=cardMultiMat;
 			cardsArray[i]=card;
 
+
+			
 		}
    
 		//Add a click listener and check how many cards a clicked
@@ -172,6 +168,14 @@ var cardsArray = [];
 
 			console.log("you clicked on card " + cardIndex);
 
+			if (pickedCards == 1) {
+				//rotate first card
+				pickResult.pickedMesh.rotate(Axis.Y, this.Math.PI, Space.LOCAL);
+				
+			} else {
+				//rotatte second card
+				pickResult.pickedMesh.rotate(Axis.Y, this.Math.PI, Space.LOCAL);
+			}
 		});
 
         return scene;
