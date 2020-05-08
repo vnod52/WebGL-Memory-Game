@@ -121,12 +121,15 @@ var cardsArray = [];
 			// assigning the multi material to the card
 			card.material=cardMultiMat;
 			cardsArray[i]=card;
+			// this is a custom attribute to know whether the card has been picked
+			cardsArray[i].picked = false;
+			console.log("Cards picked: " + cardsArray[cardIndex].picked);
+
 		}
    
 		//Add a click listener and check how many cards a clicked
 		window.addEventListener("click", function (e){
 			var pickResult = scene.pick(e.clientX, e.clientY);
-			console.log("PickedArray: " + cardsArray[cardIndex].picked);
 			
 			if (pickedCards<2) {
 				//set picked to true so we can't pick same card again.
@@ -207,20 +210,26 @@ var cardsArray = [];
 				console.log("Number of pickedCards " + pickedCards);
 				pickedCards++;
 			}
-
+			//Wait for a second before checking card match
 			this.window.setTimeout(function(){
 				if (pickedArray[1] != null){
-					console.log("array not null & two cards picked");
 					if (gameArray[pickedArray[0]] == gameArray[pickedArray[1]]) {
 						console.log("Cards Match");
+						cardsArray[pickedArray[0]].dispose();
+						cardsArray[pickedArray[1]].dispose();
+						//Reset picked cards count and clear picked cards array.
 						pickedCards = 0;
+						pickedArray = [];
 		
 					} else {
 						console.log("cards DONT match")
-						var x: Mesh = cardsArray[pickedArray[0]];
-						var y: Mesh = cardsArray[pickedArray[1]];
-						x.rotate(Axis.Y, -this.Math.PI, Space.LOCAL);
-						y.rotate(Axis.Y, -this.Math.PI, Space.LOCAL);  
+						//If cards don't match, rotate back to hide front face
+						cardsArray[pickedArray[0]].rotate(Axis.Y, -this.Math.PI, Space.LOCAL);
+						cardsArray[pickedArray[1]].rotate(Axis.Y, -this.Math.PI, Space.LOCAL);
+						//Reset picked status back to false
+						cardsArray[0].picked = false;
+						cardsArray[1].picked = false;
+						//Reset picked cards count and clear picked cards array.
 						pickedCards = 0;
 						pickedArray = [];
 					}
