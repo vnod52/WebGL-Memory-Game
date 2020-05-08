@@ -70,12 +70,9 @@ export class Main {
 // Placing the 16 cards in a 4x4 matrix
 var cardsArray = [];
 	for(var i=0; i<16; i++){
-			var card = Mesh.CreateBox("card"+i, 2, scene);
+			var card = Mesh.CreateBox("card" + i, 2, scene);
 			// determine card index
 			var cardIndex = i;
-			//shows if the card has been picked
-			// assigning the card a color attribute: the value
-			var cardValue = gameArray[i];
 			// scaling and placing the card
 			card.scaling.z = 0.125;
 			card.position = new Vector3((i%4)*2.5-3.75,Math.floor(i/4)*2.5-3.75,-0.25);
@@ -96,7 +93,8 @@ var cardsArray = [];
 			cardMaterial.diffuseColor = new Color3(0.5,0.5,0.5);
 			// the second material is "cardBackMaterial", a color from array
 			var cardBackMaterial = new StandardMaterial("cardBackMaterial", scene);
-			cardBackMaterial.diffuseTexture = new Texture("images/"+gameArray[i]+".jpg", scene);
+			//apply textures to card face
+			cardBackMaterial.diffuseTexture = new Texture("images/"+ gameArray[i] +".jpg", scene);
 			// build a multi material to store the 2 colors
 			var cardMultiMat = new MultiMaterial("cardMulti", scene);
 			//push the materials into a multimaterial
@@ -115,83 +113,70 @@ var cardsArray = [];
 			var pickResult = scene.pick(e.clientX, e.clientY);
 
 			if (pickedCards<2 && pickResult.pickedMesh.name.match("card")) {
-				//set picked to true so we can't pick same card again.
 				switch (pickResult.pickedMesh.id) {
 					case "card0":
 						cardIndex = 0
-						sound.play();
 						break;
 					case "card1":
 						cardIndex = 1
-						sound.play();
 						break;
 					case "card2":
 						cardIndex = 2
-						sound.play();
 						break;
 					case "card3":
 						cardIndex = 3
-						sound.play();
 						break;
 					case "card4":
 						cardIndex = 4
-						sound.play();
 						break;
 					case "card5":
 						cardIndex = 5
-						sound.play();
 						break;
 					case "card6":
 						cardIndex = 6
-						sound.play();
 						break;
 					case "card7":
 						cardIndex = 7
-						sound.play();
 						break;
 					case "card8":
 						cardIndex = 8
-						sound.play();
 						break;
 					case "card9":
 						cardIndex = 9
-						sound.play();
 						break;
 					case "card10":
 						cardIndex = 10
-						sound.play();
 						break;
 					case "card11":
 						cardIndex = 11
-						sound.play();
 						break;
 					case "card12":
 						cardIndex = 12
-						sound.play();
 						break;
 					case "card13":
 						cardIndex = 13
-						sound.play();
 						break;
 					case "card14":
 						cardIndex = 14
-						sound.play();
 						break;
 					case "card15":
 						cardIndex = 15
-						sound.play();
 						break;
 						default:
 						console.log("Card was not clicked");
 				}
-				pickResult.pickedMesh.rotate(Axis.Y, this.Math.PI, Space.LOCAL);
 
-				cardsArray[cardIndex].picked = true;
+				console.log(pickResult.pickedMesh.id )
+				sound.play();
 				//store picked card in array
 				pickedArray[pickedCards] = cardIndex;
-				console.log("you clicked on card " + cardIndex);
-				console.log("Number of pickedCards " + pickedCards);
+				//rotate card to reveal image.
+				pickResult.pickedMesh.rotate(Axis.Y, this.Math.PI, Space.LOCAL);
+				//set pickable to false so we can't pick same card again.
+				cardsArray[cardIndex].isPickable = false;
+				//increment picked card counter
 				pickedCards++;
+				
 			}
 			//Add a delay before checking card match
 			this.window.setTimeout(function(){
@@ -209,9 +194,9 @@ var cardsArray = [];
 						//If cards don't match, rotate back to hide front face
 						cardsArray[pickedArray[0]].rotate(Axis.Y, -this.Math.PI, Space.LOCAL);
 						cardsArray[pickedArray[1]].rotate(Axis.Y, -this.Math.PI, Space.LOCAL);
-						//Reset picked status back to false
-						cardsArray[0].picked = false;
-						cardsArray[1].picked = false;
+						//Reset pickable status back to false
+						cardsArray[pickedArray[0]].isPickable = true;
+						cardsArray[pickedArray[1]].isPickable = true;
 						//Reset picked cards count and clear picked cards array.
 						pickedCards = 0;
 						pickedArray = [];
