@@ -1,4 +1,4 @@
-import { Engine, Scene, Axis, Space, ArcRotateCamera, Vector3, Sound, SubMesh, MeshBuilder, Texture, Mesh, DirectionalLight, StandardMaterial, Color3, MultiMaterial } from 'babylonjs';
+import { Engine, Scene, Axis, Space, ArcRotateCamera, Vector3, Sound, SubMesh, Texture, Mesh, DirectionalLight, StandardMaterial, Color3, MultiMaterial } from 'babylonjs';
 
 export class Main {
 
@@ -29,21 +29,10 @@ export class Main {
         this.light = new DirectionalLight("light", new Vector3(5,0,20), scene);
 		this.light.position = new Vector3(1,1,-10);
 		
+		//Add sound to be used in scene
 		var sound = new Sound("click","sounds/click.mp3", scene);
 
-        //Card Array with colors, will be replaced with image array after test.
-        var colors = [
-            new Color3(1,0,0),
-            new Color3(1,1,0),
-            new Color3(1,0,1),
-            new Color3(0,1,0),
-            new Color3(0,1,1),
-            new Color3(0,0,1),
-            new Color3(1,1,1),
-            new Color3(1,0.5,0)
-        ];
-
-        //Array to store card values.
+        //Array to store card values. Array used for assigning textures to card as well
 		var gameArray = [0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7];
 
 		//Use function to shuffle the array
@@ -66,15 +55,13 @@ export class Main {
 		  }
 		  gameArray = shuffle(gameArray);
 
-		// a counter to tell us how many animation have been completed so far
-		var animationCompleted = 0;
         //Array to store picked cards
         var pickedArray = [];
         //counter to tell how many cards we have picked
 		var pickedCards = 0;
 	    //Create a table background. Card will be in front of table background.
         var tableMaterial = new StandardMaterial("tableMaterial", scene);
-        tableMaterial.diffuseTexture = new Texture("wood.jpg", scene);
+        tableMaterial.diffuseTexture = new Texture("images/wood.jpg", scene);
         var table = Mesh.CreateBox("table", 12, scene);
         table.scaling.z = 0.025;
 		table.material = tableMaterial;
@@ -87,8 +74,6 @@ var cardsArray = [];
 			// determine card index
 			var cardIndex = i;
 			//shows if the card has been picked
-			// var p = cardsArray[cardIndex];
-			// p.mesh.picked = false;
 			// assigning the card a color attribute: the value
 			var cardValue = gameArray[i];
 			// scaling and placing the card
@@ -109,9 +94,9 @@ var cardsArray = [];
 			// The first material is "cardMaterial", grey color
 			var cardMaterial = new StandardMaterial("cardMaterial", scene);
 			cardMaterial.diffuseColor = new Color3(0.5,0.5,0.5);
-			// the second material is "cardBackMaterial", a the actual color color
+			// the second material is "cardBackMaterial", a color from array
 			var cardBackMaterial = new StandardMaterial("cardBackMaterial", scene);
-			cardBackMaterial.diffuseColor = colors[gameArray[i]];
+			cardBackMaterial.diffuseTexture = new Texture("images/"+gameArray[i]+".jpg", scene);
 			// build a multi material to store the 2 colors
 			var cardMultiMat = new MultiMaterial("cardMulti", scene);
 			//push the materials into a multimaterial
@@ -123,15 +108,13 @@ var cardsArray = [];
 			cardsArray[i]=card;
 			// this is a custom attribute to know whether the card has been picked
 			cardsArray[i].picked = false;
-			console.log("Cards picked: " + cardsArray[cardIndex].picked);
-
 		}
    
 		//Add a click listener and check how many cards a clicked
 		window.addEventListener("click", function (e){
 			var pickResult = scene.pick(e.clientX, e.clientY);
-			
-			if (pickedCards<2) {
+
+			if (pickedCards<2 && pickResult.pickedMesh.name.match("card")) {
 				//set picked to true so we can't pick same card again.
 				switch (pickResult.pickedMesh.id) {
 					case "card0":
@@ -210,7 +193,7 @@ var cardsArray = [];
 				console.log("Number of pickedCards " + pickedCards);
 				pickedCards++;
 			}
-			//Wait for a second before checking card match
+			//Add a delay before checking card match
 			this.window.setTimeout(function(){
 				if (pickedArray[1] != null){
 					if (gameArray[pickedArray[0]] == gameArray[pickedArray[1]]) {
