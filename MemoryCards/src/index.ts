@@ -58,7 +58,10 @@ export class Main {
         //Array to store picked cards
         var pickedArray = [];
         //counter to tell how many cards we have picked
-		var pickedCards = 0;
+		var pickedCards: number = 0;
+		//score counter
+		var score: number = 50;
+
 	    //Create a table background. Card will be in front of table background.
         var tableMaterial = new StandardMaterial("tableMaterial", scene);
         tableMaterial.diffuseTexture = new Texture("images/wood.jpg", scene);
@@ -107,11 +110,13 @@ var cardsArray = [];
 			// this is a custom attribute to know whether the card has been picked
 			cardsArray[i].picked = false;
 		}
-   
+
+		
+			
 		//Add a click listener and check how many cards a clicked
 		window.addEventListener("click", function (e){
 			var pickResult = scene.pick(e.clientX, e.clientY);
-
+			if (score > 0) {
 			if (pickedCards<2 && pickResult.pickedMesh.name.match("card")) {
 				switch (pickResult.pickedMesh.id) {
 					case "card0":
@@ -165,8 +170,8 @@ var cardsArray = [];
 						default:
 						console.log("Card was not clicked");
 				}
+		
 
-				console.log(pickResult.pickedMesh.id )
 				sound.play();
 				//store picked card in array
 				pickedArray[pickedCards] = cardIndex;
@@ -175,12 +180,19 @@ var cardsArray = [];
 				//set pickable to false so we can't pick same card again.
 				cardsArray[cardIndex].isPickable = false;
 				//increment picked card counter
-				pickedCards++;
-				
+				pickedCards++;	
 			}
+
+		} else {
+			this.console.log("GAME OVER!!");
+		}
+
 			//Add a delay before checking card match
 			this.window.setTimeout(function(){
+				//run card comparison only when 2 cards are picked
 				if (pickedArray[1] != null){
+					
+					//CARDS DON't MATCH
 					if (gameArray[pickedArray[0]] == gameArray[pickedArray[1]]) {
 						console.log("Cards Match");
 						cardsArray[pickedArray[0]].dispose();
@@ -188,8 +200,10 @@ var cardsArray = [];
 						//Reset picked cards count and clear picked cards array.
 						pickedCards = 0;
 						pickedArray = [];
+						score += 10;
 		
 					} else {
+						//CARDS DON't MATCH
 						console.log("cards DONT match")
 						//If cards don't match, rotate back to hide front face
 						cardsArray[pickedArray[0]].rotate(Axis.Y, -this.Math.PI, Space.LOCAL);
@@ -200,10 +214,17 @@ var cardsArray = [];
 						//Reset picked cards count and clear picked cards array.
 						pickedCards = 0;
 						pickedArray = [];
+						score -= 10;
 					}
+
+					console.log(score);
+
 				}
 			},1000);
 		});
+
+
+
 
         return scene;
 	}
