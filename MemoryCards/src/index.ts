@@ -60,8 +60,9 @@ export class Main {
         //counter to tell how many cards we have picked
 		var pickedCards: number = 0;
 		//score counter
-		var score: number = 50;
-
+		var score: number = 100;
+		//number of correct guess count
+		var correctGuesses = 0;
 	    //Create a table background. Card will be in front of table background.
         var tableMaterial = new StandardMaterial("tableMaterial", scene);
         tableMaterial.diffuseTexture = new Texture("images/wood.jpg", scene);
@@ -70,9 +71,9 @@ export class Main {
 		table.material = tableMaterial;
 		table.isPickable = false;
 
-// Placing the 16 cards in a 4x4 matrix
-var cardsArray = [];
-	for(var i=0; i<16; i++){
+		// Placing the 16 cards in a 4x4 matrix
+		var cardsArray = [];
+		for(var i=0; i<16; i++){
 			var card = Mesh.CreateBox("card" + i, 2, scene);
 			// determine card index
 			var cardIndex = i;
@@ -91,14 +92,14 @@ var cardsArray = [];
 			card.subMeshes.push(new SubMesh(0, 4, 20, 6, 30, card));
 			card.subMeshes.push(new SubMesh(1, 0, 4, 0, 6, card));
 			// card material will be made with 2 different materials.
-			// The first material is "cardMaterial", grey color
+			// The first material is "cardMaterial", decorative backgroud
 			var cardMaterial = new StandardMaterial("cardMaterial", scene);
-			cardMaterial.diffuseColor = new Color3(0.5,0.5,0.5);
-			// the second material is "cardBackMaterial", a color from array
+			cardMaterial.diffuseTexture = new Texture("images/cardback.jpg", scene);
+			// the second material is "cardBackMaterial", a image from array
 			var cardBackMaterial = new StandardMaterial("cardBackMaterial", scene);
 			//apply textures to card face
 			cardBackMaterial.diffuseTexture = new Texture("images/"+ gameArray[i] +".jpg", scene);
-			// build a multi material to store the 2 colors
+			// build a multi material to store the 2 images
 			var cardMultiMat = new MultiMaterial("cardMulti", scene);
 			//push the materials into a multimaterial
 			cardMultiMat.subMaterials.push(cardMaterial);
@@ -111,89 +112,94 @@ var cardsArray = [];
 			cardsArray[i].picked = false;
 		}
 
-		
-			
 		//Add a click listener and check how many cards a clicked
 		window.addEventListener("click", function (e){
 			var pickResult = scene.pick(e.clientX, e.clientY);
-			if (score > 0) {
-			if (pickedCards<2 && pickResult.pickedMesh.name.match("card")) {
-				switch (pickResult.pickedMesh.id) {
-					case "card0":
-						cardIndex = 0
-						break;
-					case "card1":
-						cardIndex = 1
-						break;
-					case "card2":
-						cardIndex = 2
-						break;
-					case "card3":
-						cardIndex = 3
-						break;
-					case "card4":
-						cardIndex = 4
-						break;
-					case "card5":
-						cardIndex = 5
-						break;
-					case "card6":
-						cardIndex = 6
-						break;
-					case "card7":
-						cardIndex = 7
-						break;
-					case "card8":
-						cardIndex = 8
-						break;
-					case "card9":
-						cardIndex = 9
-						break;
-					case "card10":
-						cardIndex = 10
-						break;
-					case "card11":
-						cardIndex = 11
-						break;
-					case "card12":
-						cardIndex = 12
-						break;
-					case "card13":
-						cardIndex = 13
-						break;
-					case "card14":
-						cardIndex = 14
-						break;
-					case "card15":
-						cardIndex = 15
-						break;
-						default:
-						console.log("Card was not clicked");
+			//if correct guesses is below 8 game is still going.
+			if (correctGuesses < 8) {
+				//if score reaches zero game ends
+				if (score > 0) {
+					//can only pick 2 cards at a time
+					if (pickedCards<2 && pickResult.pickedMesh.name.match("card")) {
+						//check which card has been clicked
+						switch (pickResult.pickedMesh.id) {
+							case "card0":
+								cardIndex = 0
+								break;
+							case "card1":
+								cardIndex = 1
+								break;
+							case "card2":
+								cardIndex = 2
+								break;
+							case "card3":
+								cardIndex = 3
+								break;
+							case "card4":
+								cardIndex = 4
+								break;
+							case "card5":
+								cardIndex = 5
+								break;
+							case "card6":
+								cardIndex = 6
+								break;
+							case "card7":
+								cardIndex = 7
+								break;
+							case "card8":
+								cardIndex = 8
+								break;
+							case "card9":
+								cardIndex = 9
+								break;
+							case "card10":
+								cardIndex = 10
+								break;
+							case "card11":
+								cardIndex = 11
+								break;
+							case "card12":
+								cardIndex = 12
+								break;
+							case "card13":
+								cardIndex = 13
+								break;
+							case "card14":
+								cardIndex = 14
+								break;
+							case "card15":
+								cardIndex = 15
+								break;
+								default:
+								console.log("Card was not clicked");
+						}
+						sound.play();
+						//store picked card in array
+						pickedArray[pickedCards] = cardIndex;
+						//rotate card to reveal image.
+						pickResult.pickedMesh.rotate(Axis.Y, this.Math.PI, Space.LOCAL);
+						//set pickable to false so we can't pick same card again.
+						cardsArray[cardIndex].isPickable = false;
+						//increment picked card counter
+						pickedCards++;	
+					}
+
+				} else {
+					this.console.log("GAME OVER!!");
 				}
-		
-
-				sound.play();
-				//store picked card in array
-				pickedArray[pickedCards] = cardIndex;
-				//rotate card to reveal image.
-				pickResult.pickedMesh.rotate(Axis.Y, this.Math.PI, Space.LOCAL);
-				//set pickable to false so we can't pick same card again.
-				cardsArray[cardIndex].isPickable = false;
-				//increment picked card counter
-				pickedCards++;	
+			} else {
+				this.console.log("YOU WIN!!");
 			}
-
-		} else {
-			this.console.log("GAME OVER!!");
-		}
 
 			//Add a delay before checking card match
 			this.window.setTimeout(function(){
 				//run card comparison only when 2 cards are picked
 				if (pickedArray[1] != null){
 					
-					//CARDS DON't MATCH
+					//CARDS MATCH
 					if (gameArray[pickedArray[0]] == gameArray[pickedArray[1]]) {
+						correctGuesses++;
 						console.log("Cards Match");
 						cardsArray[pickedArray[0]].dispose();
 						cardsArray[pickedArray[1]].dispose();
@@ -201,6 +207,7 @@ var cardsArray = [];
 						pickedCards = 0;
 						pickedArray = [];
 						score += 10;
+						
 		
 					} else {
 						//CARDS DON't MATCH
@@ -217,8 +224,9 @@ var cardsArray = [];
 						score -= 10;
 					}
 
-					console.log(score);
-
+					console.log(score);	
+					console.log("correct guesses:" + correctGuesses);	
+						
 				}
 			},1000);
 		});
