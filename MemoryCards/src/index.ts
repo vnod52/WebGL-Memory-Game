@@ -29,18 +29,13 @@ export class Main {
 		this.light = new DirectionalLight("light", new Vector3(5, 0, 20), scene);
 		this.light.position = new Vector3(1, 1, -10);
 
-		this.light.intensity -= 0.002
-		scene.clearColor.r -= 0.01;
-		scene.clearColor.g -= 0.01;
-		scene.clearColor.b -= 0.01;
-
 		//Add sound to be used in scene
 		var sound = new Sound("click", "sounds/click.mp3", scene);
 
 		//Array to store card values. Array used for assigning textures to card as well
 		var gameArray = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7];
 
-		//Use function to shuffle the array
+		//Use function to shuffle the card array
 		function shuffle(array) {
 			var currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -68,7 +63,7 @@ export class Main {
 		var score: number = 100;
 		//number of correct guess count
 		var correctGuesses = 0;
-		//Create a table background. Card will be in front of table background.
+		//Create a table background for cards to sit on
 		var tableMaterial = new StandardMaterial("tableMaterial", scene);
 		tableMaterial.diffuseTexture = new Texture("images/wood.jpg", scene);
 		var table = Mesh.CreateBox("table", 12, scene);
@@ -120,74 +115,81 @@ export class Main {
 		//Add a click listener and check how many cards a clicked
 		window.addEventListener("click", function (e) {
 			var pickResult = scene.pick(e.clientX, e.clientY);
-			//if score reaches zero game ends
-			if (score > 0) {
-				//can only pick 2 cards at a time
-				if (pickedCards < 2 && pickResult.pickedMesh.name.match("card")) {
-					//check which card has been clicked
-					switch (pickResult.pickedMesh.id) {
-						case "card0":
-							cardIndex = 0
-							break;
-						case "card1":
-							cardIndex = 1
-							break;
-						case "card2":
-							cardIndex = 2
-							break;
-						case "card3":
-							cardIndex = 3
-							break;
-						case "card4":
-							cardIndex = 4
-							break;
-						case "card5":
-							cardIndex = 5
-							break;
-						case "card6":
-							cardIndex = 6
-							break;
-						case "card7":
-							cardIndex = 7
-							break;
-						case "card8":
-							cardIndex = 8
-							break;
-						case "card9":
-							cardIndex = 9
-							break;
-						case "card10":
-							cardIndex = 10
-							break;
-						case "card11":
-							cardIndex = 11
-							break;
-						case "card12":
-							cardIndex = 12
-							break;
-						case "card13":
-							cardIndex = 13
-							break;
-						case "card14":
-							cardIndex = 14
-							break;
-						case "card15":
-							cardIndex = 15
-							break;
-						default:
-							console.log("Card was not clicked");
+
+			try {
+				//if score reaches zero game ends
+				if (score > 0) {
+					//can only pick 2 cards at a time
+					if (pickedCards < 2 && pickResult.pickedMesh.name.match("card")) {
+						//check which card has been clicked
+						switch (pickResult.pickedMesh.id) {
+							case "card0":
+								cardIndex = 0
+								break;
+							case "card1":
+								cardIndex = 1
+								break;
+							case "card2":
+								cardIndex = 2
+								break;
+							case "card3":
+								cardIndex = 3
+								break;
+							case "card4":
+								cardIndex = 4
+								break;
+							case "card5":
+								cardIndex = 5
+								break;
+							case "card6":
+								cardIndex = 6
+								break;
+							case "card7":
+								cardIndex = 7
+								break;
+							case "card8":
+								cardIndex = 8
+								break;
+							case "card9":
+								cardIndex = 9
+								break;
+							case "card10":
+								cardIndex = 10
+								break;
+							case "card11":
+								cardIndex = 11
+								break;
+							case "card12":
+								cardIndex = 12
+								break;
+							case "card13":
+								cardIndex = 13
+								break;
+							case "card14":
+								cardIndex = 14
+								break;
+							case "card15":
+								cardIndex = 15
+								break;
+							default:
+								console.log("Card was not clicked");
+						}
+						//play sound each time card is clicked
+						sound.play();
+						//store picked card in array
+						pickedArray[pickedCards] = cardIndex;
+						//rotate card to reveal image.
+						pickResult.pickedMesh.rotate(Axis.Y, this.Math.PI, Space.LOCAL);
+						//set pickable to false so we can't pick same card again.
+						cardsArray[cardIndex].isPickable = false;
+						//increment picked card counter
+						pickedCards++;
 					}
-					sound.play();
-					//store picked card in array
-					pickedArray[pickedCards] = cardIndex;
-					//rotate card to reveal image.
-					pickResult.pickedMesh.rotate(Axis.Y, this.Math.PI, Space.LOCAL);
-					//set pickable to false so we can't pick same card again.
-					cardsArray[cardIndex].isPickable = false;
-					//increment picked card counter
-					pickedCards++;
 				}
 
+			} catch (error) {
+				//catch any errors and log.
+				console.log(error);
 			}
 
 			//Add a delay before checking card match
@@ -211,7 +213,6 @@ export class Main {
 							console.log("YOU WIN!!");
 						}
 
-
 					} else {
 						//CARDS DON't MATCH
 						console.log("cards DONT match");
@@ -231,7 +232,6 @@ export class Main {
 							console.log("GAME OVER!!");
 						}
 					}
-
 					console.log(score);
 				}
 
@@ -244,6 +244,8 @@ export class Main {
 	update() {
 		// increment our time for use with sine waves etc.
 		this.timeElapsed += this.engine.getDeltaTime() / 1000;
+
+		// console.log(this.timeElapsed);
 
 		// Render the scene.
 		this.scene.render();

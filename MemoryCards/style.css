@@ -1,11 +1,9 @@
-html,
-body {
-    overflow: hidden;
+html, body, canvas {
     width: 100%;
     height: 100%;
-    margin: 0;
     padding: 0;
-    text-align: center;
+    margin: 0;
+    overflow: hidden;
 }
 
 #renderCanvas {
@@ -13,3 +11,4 @@ body {
     height: 100%;
     touch-action: none;
 }
+
