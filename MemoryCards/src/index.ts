@@ -1,4 +1,4 @@
-import { Engine, Scene, Axis, Space, ArcRotateCamera, Vector3, Sound, SubMesh, Texture, Mesh, DirectionalLight, StandardMaterial, Color3, MultiMaterial } from 'babylonjs';
+import { Engine, Scene, Axis, Space, ArcRotateCamera, Vector3, Animation, Sound, SubMesh, Texture, Mesh, DirectionalLight, StandardMaterial, MultiMaterial } from 'babylonjs';
 
 export class Main {
 
@@ -23,6 +23,7 @@ export class Main {
 
 		//Add a camera to scene and attach controls
 		this.camera = new ArcRotateCamera("camera", 3 * Math.PI / 2, 11 * Math.PI / 16, 20, Vector3.Zero(), scene);
+		// this.camera = new ArcRotateCamera("camera", 3 * Math.PI / 2, 11 * Math.PI / 16, 5, Vector3.Zero(), scene);
 		this.camera.attachControl(this.canvas, false);
 
 		//Add lighting to scene
@@ -36,7 +37,7 @@ export class Main {
 		var gameArray = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7];
 
 		//Use function to shuffle the card array
-		function shuffle(array) {
+		function shuffle(array): any {
 			var currentIndex = array.length, temporaryValue, randomIndex;
 
 			// While there remain elements to shuffle...
@@ -56,27 +57,21 @@ export class Main {
 		gameArray = shuffle(gameArray);
 
 		//Array to store picked cards
-		var pickedArray = [];
+		var pickedArray: any = [];
 		//counter to tell how many cards we have picked
 		var pickedCards: number = 0;
 		//score counter
 		var score: number = 100;
 		//number of correct guess count
-		var correctGuesses = 0;
-		//Create a table background for cards to sit on
-		var tableMaterial = new StandardMaterial("tableMaterial", scene);
-		tableMaterial.diffuseTexture = new Texture("images/wood.jpg", scene);
-		var table = Mesh.CreateBox("table", 12, scene);
-		table.scaling.z = 0.025;
-		table.material = tableMaterial;
-		table.isPickable = false;
+		var correctGuesses:number = 0;
+
 
 		// Placing the 16 cards in a 4x4 matrix
-		var cardsArray = [];
+		var cardsArray: any = [];
 		for (var i = 0; i < 16; i++) {
-			var card = Mesh.CreateBox("card" + i, 2, scene);
+			var card:Mesh = Mesh.CreateBox("card" + i, 2, scene);
 			// determine card index
-			var cardIndex = i;
+			var cardIndex: number = i;
 			// scaling and placing the card
 			card.scaling.z = 0.125;
 			card.position = new Vector3((i % 4) * 2.5 - 3.75, Math.floor(i / 4) * 2.5 - 3.75, -0.25);
@@ -93,14 +88,14 @@ export class Main {
 			card.subMeshes.push(new SubMesh(1, 0, 4, 0, 6, card));
 			// card material will be made with 2 different materials.
 			// The first material is "cardMaterial", decorative backgroud
-			var cardMaterial = new StandardMaterial("cardMaterial", scene);
+			var cardMaterial: StandardMaterial = new StandardMaterial("cardMaterial", scene);
 			cardMaterial.diffuseTexture = new Texture("images/cardback.jpg", scene);
 			// the second material is "cardBackMaterial", a image from array
-			var cardBackMaterial = new StandardMaterial("cardBackMaterial", scene);
+			var cardBackMaterial: StandardMaterial = new StandardMaterial("cardBackMaterial", scene);
 			//apply textures to card face
 			cardBackMaterial.diffuseTexture = new Texture("images/" + gameArray[i] + ".jpg", scene);
 			// build a multi material to store the 2 images
-			var cardMultiMat = new MultiMaterial("cardMulti", scene);
+			var cardMultiMat: MultiMaterial = new MultiMaterial("cardMulti", scene);
 			//push the materials into a multimaterial
 			cardMultiMat.subMaterials.push(cardMaterial);
 			cardMultiMat.subMaterials.push(cardBackMaterial);
@@ -111,6 +106,65 @@ export class Main {
 			// this is a custom attribute to know whether the card has been picked
 			cardsArray[i].picked = false;
 		}
+
+		//Create a table background for cards to sit on
+		var tableMaterial: StandardMaterial = new StandardMaterial("tableMaterial", scene);
+		tableMaterial.diffuseTexture = new Texture("images/wood.jpg", scene);
+		var table: Mesh = Mesh.CreateBox("table", 12, scene);
+		table.scaling.z = 0.025;
+		// infoBox.position.z = -0.25;
+		table.material = tableMaterial;
+		table.isPickable = false;
+
+		//Create a box to display user info
+		var infoBoxMaterial: StandardMaterial = new StandardMaterial("infoBoxMaterial", scene);
+		infoBoxMaterial.diffuseTexture = new Texture("images/infobox.jpg", scene);
+		var infoBox: Mesh = Mesh.CreateBox("infoBox", 12, scene);
+		infoBox.scaling.z = 0.025;
+		// infoBox.position.z = -0.25;
+		infoBox.material = infoBoxMaterial;
+		infoBox.isPickable = false;
+
+		//DEFINE THE ANIMATION
+		var infoBoxAnimation: Animation = new Animation("infoBoxAnimation", "position.z", 5, // animation speed
+			Animation.ANIMATIONTYPE_FLOAT, // animation type
+			Animation.ANIMATIONLOOPMODE_CONSTANT // animation loop mode
+		);
+		var tableAnimation: Animation = new Animation("tableAnimation", "position.z", 5, // animation speed
+			Animation.ANIMATIONTYPE_FLOAT, // animation type
+			Animation.ANIMATIONLOOPMODE_CONSTANT // animation loop mode
+		);
+
+		//define animation keyframes
+		var infoBoxKeys = [
+			{
+				frame: 0,
+				value: -0.6
+			},
+			{
+				frame: 30,
+				value: 0.25
+			}
+		];
+
+		var tableKeys = [
+			{
+				frame: 30,
+				value: -0.5
+			},
+			{
+				frame: 60,
+				value: 0.025
+			}
+		];
+		infoBoxAnimation.setKeys(infoBoxKeys);
+		infoBox.animations.push(infoBoxAnimation);
+
+		tableAnimation.setKeys(tableKeys);
+		table.animations.push(tableAnimation);
+
+		scene.beginAnimation(infoBox, 0, 30, false);
+		scene.beginAnimation(table, 30, 60, false);
 
 		//Add a click listener and check how many cards a clicked
 		window.addEventListener("click", function (e) {
@@ -241,11 +295,11 @@ export class Main {
 		return scene;
 	}
 
+
+
 	update() {
 		// increment our time for use with sine waves etc.
 		this.timeElapsed += this.engine.getDeltaTime() / 1000;
-
-		// console.log(this.timeElapsed);
 
 		// Render the scene.
 		this.scene.render();
