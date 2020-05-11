@@ -1,4 +1,5 @@
 import { Engine, Scene, Axis, Space, ArcRotateCamera, Vector3, Animation, Sound, SubMesh, Texture, Mesh, DirectionalLight, StandardMaterial, MultiMaterial } from 'babylonjs';
+import { AdvancedDynamicTexture, TextBlock, Button } from 'babylonjs-gui'
 
 export class Main {
 
@@ -18,6 +19,8 @@ export class Main {
 	light: DirectionalLight;
 
 	createScene(): Scene {
+
+
 		// Setup important scene stuff
 		var scene: Scene = new Scene(this.engine);
 
@@ -63,13 +66,13 @@ export class Main {
 		//score counter
 		var score: number = 100;
 		//number of correct guess count
-		var correctGuesses:number = 0;
+		var correctGuesses: number = 0;
 
 
 		// Placing the 16 cards in a 4x4 matrix
 		var cardsArray: any = [];
 		for (var i = 0; i < 16; i++) {
-			var card:Mesh = Mesh.CreateBox("card" + i, 2, scene);
+			var card: Mesh = Mesh.CreateBox("card" + i, 2, scene);
 			// determine card index
 			var cardIndex: number = i;
 			// scaling and placing the card
@@ -124,6 +127,30 @@ export class Main {
 		// infoBox.position.z = -0.25;
 		infoBox.material = infoBoxMaterial;
 		infoBox.isPickable = false;
+
+		// GUI - Add textbox on top of screen
+		var advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+		var txtScore = new TextBlock();
+		txtScore.text = "Score Remaining: " + score;
+		txtScore.color = "white";
+		txtScore.fontSize = 24;
+		txtScore.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+		txtScore.top = "45px";
+		txtScore.alpha = 0.7;
+
+		//add button on the bottow of screen to restart game
+		var button = Button.CreateSimpleButton("but", "Try Again!");
+		button.width = 0.2;
+		button.height = "40px";
+		button.color = "white";
+		button.cornerRadius = 10;
+		button.background = "#34324c";
+		button.alpha = 0.5;
+		button.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+		button.top = "-50";
+
+		//add button and texbox to scene after intial animation completes
+		setTimeout(() => { advancedTexture.addControl(txtScore); advancedTexture.addControl(button); }, 7000);
 
 		//DEFINE THE ANIMATION
 		var infoBoxAnimation: Animation = new Animation("infoBoxAnimation", "position.z", 5, // animation speed
@@ -195,75 +222,75 @@ export class Main {
 		window.addEventListener("click", function (e) {
 			var pickResult = scene.pick(e.clientX, e.clientY);
 
-				//if score reaches zero game ends
-				if (score > 0) {
-					//can only pick 2 cards at a time
-					if (pickedCards < 2 && pickResult.pickedMesh.name.match("card")) {
-						//check which card has been clicked
-						switch (pickResult.pickedMesh.id) {
-							case "card0":
-								cardIndex = 0
-								break;
-							case "card1":
-								cardIndex = 1
-								break;
-							case "card2":
-								cardIndex = 2
-								break;
-							case "card3":
-								cardIndex = 3
-								break;
-							case "card4":
-								cardIndex = 4
-								break;
-							case "card5":
-								cardIndex = 5
-								break;
-							case "card6":
-								cardIndex = 6
-								break;
-							case "card7":
-								cardIndex = 7
-								break;
-							case "card8":
-								cardIndex = 8
-								break;
-							case "card9":
-								cardIndex = 9
-								break;
-							case "card10":
-								cardIndex = 10
-								break;
-							case "card11":
-								cardIndex = 11
-								break;
-							case "card12":
-								cardIndex = 12
-								break;
-							case "card13":
-								cardIndex = 13
-								break;
-							case "card14":
-								cardIndex = 14
-								break;
-							case "card15":
-								cardIndex = 15
-								break;
-							default:
-								console.log("Card was not clicked");
-						}
-						//play sound each time card is clicked
-						sound.play();
-						//store picked card in array
-						pickedArray[pickedCards] = cardIndex;
-						//rotate card to reveal image.
-						pickResult.pickedMesh.rotate(Axis.Y, this.Math.PI, Space.LOCAL);
-						//set pickable to false so we can't pick same card again.
-						cardsArray[cardIndex].isPickable = false;
-						//increment picked card counter
-						pickedCards++;
+			//if score reaches zero game ends
+			if (score > 0) {
+				//can only pick 2 cards at a time
+				if (pickedCards < 2 && pickResult.pickedMesh.name.match("card")) {
+					//check which card has been clicked
+					switch (pickResult.pickedMesh.id) {
+						case "card0":
+							cardIndex = 0
+							break;
+						case "card1":
+							cardIndex = 1
+							break;
+						case "card2":
+							cardIndex = 2
+							break;
+						case "card3":
+							cardIndex = 3
+							break;
+						case "card4":
+							cardIndex = 4
+							break;
+						case "card5":
+							cardIndex = 5
+							break;
+						case "card6":
+							cardIndex = 6
+							break;
+						case "card7":
+							cardIndex = 7
+							break;
+						case "card8":
+							cardIndex = 8
+							break;
+						case "card9":
+							cardIndex = 9
+							break;
+						case "card10":
+							cardIndex = 10
+							break;
+						case "card11":
+							cardIndex = 11
+							break;
+						case "card12":
+							cardIndex = 12
+							break;
+						case "card13":
+							cardIndex = 13
+							break;
+						case "card14":
+							cardIndex = 14
+							break;
+						case "card15":
+							cardIndex = 15
+							break;
+						default:
+							console.log("Card was not clicked");
 					}
+					//play sound each time card is clicked
+					sound.play();
+					//store picked card in array
+					pickedArray[pickedCards] = cardIndex;
+					//rotate card to reveal image.
+					pickResult.pickedMesh.rotate(Axis.Y, this.Math.PI, Space.LOCAL);
+					//set pickable to false so we can't pick same card again.
+					cardsArray[cardIndex].isPickable = false;
+					//increment picked card counter
+					pickedCards++;
 				}
+			}
 
 			//Add a delay before checking card match
 			this.window.setTimeout(function () {
@@ -280,10 +307,12 @@ export class Main {
 						pickedArray = [];
 						correctGuesses++;
 						score += 10;
+						txtScore.text = "Score: " + score;
+						txtScore.color = "green";
 
 						//if guess count reaches 8 game, all cards are matched
 						if (correctGuesses == 8) {
-							console.log("YOU WIN!!");
+							alert("You did it!");
 						}
 
 					} else {
@@ -299,10 +328,14 @@ export class Main {
 						pickedCards = 0;
 						pickedArray = [];
 						score -= 10;
+						txtScore.text = "Score: " + score;
+						txtScore.color = "red";
+
+
 
 						//if score reaches zero game ends
 						if (score == 0) {
-							console.log("GAME OVER!!");
+							alert("GAME OVER....Better luck next time!!!");
 							tableMaterial.diffuseTexture = new Texture("images/infobox.jpg", scene);
 
 						}
