@@ -134,7 +134,6 @@ export class Main {
 			Animation.ANIMATIONTYPE_FLOAT, // animation type
 			Animation.ANIMATIONLOOPMODE_CONSTANT // animation loop mode
 		);
-
 		var cameraAnimation: Animation = new Animation("cameraAnimation", "radius", 1, // animation speed
 			Animation.ANIMATIONTYPE_FLOAT, // animation type
 			Animation.ANIMATIONLOOPMODE_CONSTANT // animation loop mode
@@ -168,25 +167,29 @@ export class Main {
 				value: 5
 			},
 			{
-				frame: 90,
+				frame: 66,
+				value: 7
+			},
+			{
+				frame: 66,
+				value: 7
+			},
+			{
+				frame: 66.5,
 				value: 20
 			}
 		];
+		//assign keys to mesh
 		infoBoxAnimation.setKeys(infoBoxKeys);
 		infoBox.animations.push(infoBoxAnimation);
-
 		tableAnimation.setKeys(tableKeys);
 		table.animations.push(tableAnimation);
-
 		cameraAnimation.setKeys(cameraMoveKeys);
 		this.camera.animations.push(cameraAnimation);
-
+		//start animation
 		scene.beginAnimation(infoBox, 0, 30, false);
 		scene.beginAnimation(table, 30, 60, false);
 		scene.beginAnimation(this.camera, 60, 90, false);
-
-
-		// this.camera.radius = 5;
 
 		//Add a click listener and check how many cards a clicked
 		window.addEventListener("click", function (e) {
@@ -300,6 +303,8 @@ export class Main {
 						//if score reaches zero game ends
 						if (score == 0) {
 							console.log("GAME OVER!!");
+							tableMaterial.diffuseTexture = new Texture("images/infobox.jpg", scene);
+
 						}
 					}
 					console.log(score);
