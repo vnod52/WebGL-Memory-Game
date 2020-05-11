@@ -135,6 +135,11 @@ export class Main {
 			Animation.ANIMATIONLOOPMODE_CONSTANT // animation loop mode
 		);
 
+		var cameraAnimation: Animation = new Animation("cameraAnimation", "radius", 1, // animation speed
+			Animation.ANIMATIONTYPE_FLOAT, // animation type
+			Animation.ANIMATIONLOOPMODE_CONSTANT // animation loop mode
+		);
+
 		//define animation keyframes
 		var infoBoxKeys = [
 			{
@@ -157,20 +162,36 @@ export class Main {
 				value: 0.025
 			}
 		];
+		var cameraMoveKeys = [
+			{
+				frame: 60,
+				value: 5
+			},
+			{
+				frame: 90,
+				value: 20
+			}
+		];
 		infoBoxAnimation.setKeys(infoBoxKeys);
 		infoBox.animations.push(infoBoxAnimation);
 
 		tableAnimation.setKeys(tableKeys);
 		table.animations.push(tableAnimation);
 
+		cameraAnimation.setKeys(cameraMoveKeys);
+		this.camera.animations.push(cameraAnimation);
+
 		scene.beginAnimation(infoBox, 0, 30, false);
 		scene.beginAnimation(table, 30, 60, false);
+		scene.beginAnimation(this.camera, 60, 90, false);
+
+
+		// this.camera.radius = 5;
 
 		//Add a click listener and check how many cards a clicked
 		window.addEventListener("click", function (e) {
 			var pickResult = scene.pick(e.clientX, e.clientY);
 
-			try {
 				//if score reaches zero game ends
 				if (score > 0) {
 					//can only pick 2 cards at a time
@@ -240,11 +261,6 @@ export class Main {
 						pickedCards++;
 					}
 				}
-
-			} catch (error) {
-				//catch any errors and log.
-				console.log(error);
-			}
 
 			//Add a delay before checking card match
 			this.window.setTimeout(function () {
