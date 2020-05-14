@@ -10,6 +10,9 @@ export class Main {
 		});
 	}
 
+
+
+
 	// record time.
 	timeElapsed: number = 0;
 	canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("gameCanvas");
@@ -22,22 +25,25 @@ export class Main {
 
 		// Setup important scene stuff
 		var scene: Scene = new Scene(this.engine);
-
 		//Add a camera to scene and attach controls
 		this.camera = new ArcRotateCamera("camera", 3 * Math.PI / 2, 11 * Math.PI / 16, 20, Vector3.Zero(), scene);
 		// this.camera = new ArcRotateCamera("camera", 3 * Math.PI / 2, 11 * Math.PI / 16, 5, Vector3.Zero(), scene);
 		this.camera.attachControl(this.canvas, false);
-
 		//Add lighting to scene
 		this.light = new DirectionalLight("light", new Vector3(5, 0, 20), scene);
 		this.light.position = new Vector3(1, 1, -10);
-
 		//Add sound to be used in scene
 		var click = new Sound("click", "sounds/click.mp3", scene);
 		var win = new Sound("win", "sounds/win.mp3", scene);
 		var lose = new Sound("lose", "sounds/lose.mp3", scene);
 		var gameOver = new Sound("gameOver", "sounds/gameOver.mp3", scene);
 		var gameWin = new Sound("gameWin", "sounds/gameWin.mp3", scene);
+		// A little mood music
+		var music = new Sound("music", "sounds/intro.mp3", scene, soundReady, { loop: true, volume: 0.5 });
+		function soundReady() {
+			music.play();
+		}
+
 		//Array to store card values. Array used for assigning textures to card as well
 		var gameArray = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7];
 		//Array to store picked cards
@@ -128,6 +134,7 @@ export class Main {
 			pickedArray = [];
 			score = 100;
 			pickedCards = 0;
+			correctGuesses = 0;
 			txtScore.text = "Score: " + score;
 			txtScore.color = "white";
 		}
@@ -150,19 +157,29 @@ export class Main {
 		infoBox.material = infoBoxMaterial;
 		infoBox.isPickable = false;
 
-		// GUI - Add textbox on top of screen
+		// GUI - Title textbox, top of screen
+		var advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+		var txtTitle = new TextBlock();
+		txtTitle.text = "Memory Game";
+		txtTitle.color = "yellow";
+		txtTitle.fontSize = 35;
+		txtTitle.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+		txtTitle.top = "20px";
+		txtTitle.alpha = 0.7;
+
+		//Add textbox on top of screen
 		var advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
 		var txtScore = new TextBlock();
 		txtScore.text = "Score Remaining: " + score;
 		txtScore.color = "white";
-		txtScore.fontSize = 24;
+		txtScore.fontSize = 20;
 		txtScore.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-		txtScore.top = "45px";
+		txtScore.top = "70px";
 		txtScore.alpha = 0.7;
 
 		//add button on the bottow of screen to restart game
 		var button = Button.CreateSimpleButton("but", "Try Again!");
-		button.width = 0.2;
+		button.width = 0.3;
 		button.height = "40px";
 		button.color = "white";
 		button.cornerRadius = 10;
@@ -174,14 +191,14 @@ export class Main {
 		//restart game if user chooses to do so
 		button.onPointerUpObservable.add(function () {
 			click.play();
-			let response = confirm("Are you sure you want to restart game?")
+			let response = confirm("You are about to reload the game?")
 			if (response == true) {
 				reloadGame();
 			}
 		});
 
 		//add button and texbox to scene after intial animation completes
-		setTimeout(() => { advancedTexture.addControl(txtScore); advancedTexture.addControl(button); }, 7000);
+		setTimeout(() => { advancedTexture.addControl(txtScore); advancedTexture.addControl(button); advancedTexture.addControl(txtTitle); }, 7000);
 
 		//DEFINE THE ANIMATION
 		var infoBoxAnimation: Animation = new Animation("infoBoxAnimation", "position.z", 5, // animation speed
@@ -376,10 +393,9 @@ export class Main {
 						}
 					}
 					console.log(score);
-
 				}
 
-			}, 500);
+			}, 1000);
 		});
 		return scene;
 	}
