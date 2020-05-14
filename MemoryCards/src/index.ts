@@ -168,7 +168,6 @@ export class Main {
 		txtTitle.alpha = 0.7;
 
 		//Add textbox on top of screen
-		var advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
 		var txtScore = new TextBlock();
 		txtScore.text = "Score Remaining: " + score;
 		txtScore.color = "white";
@@ -196,9 +195,9 @@ export class Main {
 				reloadGame();
 			}
 		});
-
-		//add button and texbox to scene after intial animation completes
-		setTimeout(() => { advancedTexture.addControl(txtScore); advancedTexture.addControl(button); advancedTexture.addControl(txtTitle); }, 7000);
+		//add button and texbox to scene after intial animation completes (button freezes of all 3 add controls are in one setTImeout function!)
+		setTimeout(() => {advancedTexture.addControl(txtTitle); }, 7000);
+		setTimeout(() => { advancedTexture.addControl(txtScore); advancedTexture.addControl(button);  }, 7000);
 
 		//DEFINE THE ANIMATION
 		var infoBoxAnimation: Animation = new Animation("infoBoxAnimation", "position.z", 5, // animation speed
