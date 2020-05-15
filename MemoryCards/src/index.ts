@@ -10,9 +10,6 @@ export class Main {
 		});
 	}
 
-
-
-
 	// record time.
 	timeElapsed: number = 0;
 	canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("gameCanvas");
@@ -22,7 +19,6 @@ export class Main {
 	light: DirectionalLight;
 
 	createScene(): Scene {
-
 		// Setup important scene stuff
 		var scene: Scene = new Scene(this.engine);
 		//Add a camera to scene and attach controls
@@ -38,12 +34,7 @@ export class Main {
 		var lose = new Sound("lose", "sounds/lose.mp3", scene);
 		var gameOver = new Sound("gameOver", "sounds/gameOver.mp3", scene);
 		var gameWin = new Sound("gameWin", "sounds/gameWin.mp3", scene);
-		// A little mood music
 		var music = new Sound("music", "sounds/intro.mp3", scene, soundReady, { loop: true, volume: 0.5 });
-		function soundReady() {
-			music.play();
-		}
-
 		//Array to store card values. Array used for assigning textures to card as well
 		var gameArray = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7];
 		//Array to store picked cards
@@ -51,12 +42,17 @@ export class Main {
 		//counter to tell how many cards we have picked
 		var pickedCards: number = 0;
 		//score counter
-		var score: number = 100;
+		var score: number = 80;
 		//number of correct guess count
 		var correctGuesses: number = 0;
 		//array to store all the cards
 		var cardsArray: any = [];
 		// Placing the 16 cards in a 4x4 matrix
+		
+		// A little mood music
+		function soundReady() {
+			music.play();
+		}
 
 		function generateCards() {
 			//Use function to shuffle the card array
@@ -132,7 +128,7 @@ export class Main {
 			disposeAllCards();
 			generateCards();
 			pickedArray = [];
-			score = 100;
+			score = 80;
 			pickedCards = 0;
 			correctGuesses = 0;
 			txtScore.text = "Score: " + score;
@@ -178,7 +174,7 @@ export class Main {
 
 		//add button on the bottow of screen to restart game
 		var button = Button.CreateSimpleButton("but", "Try Again!");
-		button.width = 0.3;
+		button.width = "150px";
 		button.height = "40px";
 		button.color = "white";
 		button.cornerRadius = 10;
@@ -196,8 +192,8 @@ export class Main {
 			}
 		});
 		//add button and texbox to scene after intial animation completes (button freezes of all 3 add controls are in one setTImeout function!)
-		setTimeout(() => {advancedTexture.addControl(txtTitle); }, 7000);
-		setTimeout(() => { advancedTexture.addControl(txtScore); advancedTexture.addControl(button);  }, 7000);
+		setTimeout(() => { advancedTexture.addControl(txtTitle); }, 7000);
+		setTimeout(() => { advancedTexture.addControl(txtScore); advancedTexture.addControl(button); }, 7000);
 
 		//DEFINE THE ANIMATION
 		var infoBoxAnimation: Animation = new Animation("infoBoxAnimation", "position.z", 5, // animation speed
