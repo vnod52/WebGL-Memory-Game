@@ -18,6 +18,6 @@
   },
   "dependencies": {
     "babylonjs-gui": "^4.1.0",
-    "babylonjs-loaders": "^4.1.0"
+    "babylonjs-loaders": "^6.14.0"
   }
 }
