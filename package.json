@@ -17,7 +17,7 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
-    "babylonjs-gui": "^4.1.0",
+    "babylonjs-gui": "^6.42.0",
     "babylonjs-loaders": "^6.21.0"
   }
 }
